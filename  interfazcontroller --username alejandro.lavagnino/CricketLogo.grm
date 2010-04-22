@@ -1,0 +1,150 @@
+"Name"    = 'CricketLogo'
+"Author"  = 'Arnan (Roger) Sipitakiat'
+"Version" = '1.1' 
+"About"   = 'This is a Cricket Logo compiler with added primitives for the gogo board'
+
+"Case Sensitive" = False 
+"Start Symbol"   = <Procedures>
+
+{LetterPlus_} = {Letter} + [_]
+{AlphaNumericPlus_} = {AlphaNumeric} + [_]
+
+IdentName = {LetterPlus_}{AlphaNumericPlus_}*
+Reporter = [:]{LetterPlus_}{AlphaNumericPlus_}*
+Receiver = ["]{LetterPlus_}{AlphaNumericPlus_}*
+
+{MotorNames} = [abcd]
+MotorAttention = {MotorNames}+[;]
+
+
+NumberLiteral = {Digit}+
+
+Comment Start = '/*'
+Comment End   = '*/'
+Comment Line  = '//' 
+
+<Procedures> ::= <Procedure> <Procedures>
+		|  <Procedure>
+
+<Procedure> ::= to IdentName '(' <ParameterDeclarations> ')' <Statements> end
+		| to IdentName <Statements> end
+
+<ParameterDeclarations> ::= <ParameterDeclaration> ',' <ParameterDeclarations>
+			| <ParameterDeclaration>
+
+<ParameterDeclaration> ::= IdentName 
+
+<Statements> ::= <Statement> <Statements>
+               | <Statement>
+		  
+<Statement>  ::= return '(' <Expression> ')'
+		| repeat <Expression> '[' <Statements> ']'
+		| if <Expression> '[' <Statements> ']'
+		| ifelse <Expression> '[' <Statements> ']' '[' <Statements> ']'
+		| waituntil '(' <Expression> ')'
+		| forever '[' <Statements> ']'
+		| wait '(' <Expression> ')' 
+		| stop
+		| resett
+		| send '(' <Expression> ')'
+		| set '(' IdentName ',' <Expression> ')'
+		| list '(' IdentName ',' <Expression> ')'
+		| setitem '(' IdentName ',' <Expression> ',' <Expression> ')'
+!		| resetdp
+!		| record '(' <Expression> ')'
+!		| erase '(' <Expression> ')'
+		| MotorAttention
+		| output '(' <MotorList> ')'
+		| on
+		| onfor '(' <Expression> ')'
+		| off
+		| thisway
+		| thatway
+		| rd
+		| brake
+!		| setsvh '(' <Expression> ')'
+!		| svr '(' <Expression> ')'
+!		| svl '(' <Expression> ')'
+		| setpower '(' <Expression> ')'
+		| <ProcedureCall>
+!		| i2c_start
+!		| i2c_stop
+!		| i2c_write '(' <Expression> ')'
+!		| show <showExpression>
+		| servo_set '(' <Expression> ')'
+		| servo_lt '(' <Expression> ')'
+		| servo_rt '(' <Expression> ')'
+		| pap '(' <Expression> ')'
+		| papsteps '(' <Expression> ')'
+		| papspeed '(' <Expression> ')'
+		| 'stop!'
+	 
+
+<Expression>  ::= <Expression> and <Com Exp>
+		| <Expression> or <Com Exp>
+		| <Expression> xor <Com Exp>
+		| <Com Exp>
+
+               
+<Com Exp>   ::=    <Com Exp> '>' <Add Exp> 
+                 | <Com Exp> '<' <Add Exp> 
+                 | <Com Exp> '=' <Add Exp>
+                 | <Add Exp> 
+
+<Add Exp>      ::= <Add Exp> '+' <Mult Exp>
+                 | <Add Exp> '-' <Mult Exp>
+                 | <Mult Exp> 
+
+<Mult Exp>    ::= <Mult Exp> '*' <Negate Exp> 
+                | <Mult Exp> '/' <Negate Exp> 
+		| <Mult Exp> '%' <Negate Exp>
+                | <Negate Exp> 
+
+<Negate Exp>  ::= '-' <Value> 
+		  | not <Value>
+                | <Value> 
+
+<Value>       ::= Reporter           
+		| <ProcedureCall> 
+                | NumberLiteral
+                | '(' <Expression> ')'
+                | timer
+		| serial
+		| 'newserial?'
+		| random
+		| recall 
+		| sensor1
+		| sensor2
+		| sensor3
+		| sensor4
+		| sensor5
+		| sensor6
+		| sensor7
+		| sensor8
+		| switch1
+		| switch2
+		| switch3
+		| switch4
+		| switch5
+		| switch6
+		| switch7
+		| switch8
+		| i2c_read '(' <Expression> ')'
+		| highbyte '(' <Expression> ')'
+		| lowbyte '(' <Expression> ')'
+		| item '(' IdentName ',' <Expression> ')'
+		
+
+<MotorList>	::= '[' <MotorListItems> ']'
+
+<MotorListItems> ::= <MotorListItems>','NumberLiteral
+		| NumberLiteral
+
+
+<ProcedureCall> ::= IdentName '(' <Parameters> ')'
+		  | IdentName 
+
+<Parameters> ::= <Parameter>','<Parameters>
+		| <Parameter>
+
+<Parameter> ::= <Expression>
