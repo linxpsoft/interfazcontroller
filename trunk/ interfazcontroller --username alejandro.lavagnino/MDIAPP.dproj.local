@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010/03/23 20:40:08.062.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\ChildWin.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\InterfazFrm.pas</Transaction>
+    <Transaction>2010/03/23 20:40:08.062.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\ChildWin.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\InterfazFrm.dfm</Transaction>
+    <Transaction>2010/03/23 20:40:13.937.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Main.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MinFrm.pas</Transaction>
+    <Transaction>2010/03/23 20:40:13.937.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Main.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MinFrm.dfm</Transaction>
+    <Transaction>2010/03/23 20:40:17.437.PAS,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MinFrm.PAS=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MainFrm.PAS</Transaction>
+    <Transaction>2010/03/23 20:40:17.437.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MinFrm.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MainFrm.dfm</Transaction>
+    <Transaction>2010/03/23 20:41:06.359.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MotorFrm.pas</Transaction>
+    <Transaction>2010/03/23 20:41:06.359.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\MotorFrm.dfm</Transaction>
+    <Transaction>2010/03/24 16:01:55.406.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\SalidasFrm.pas</Transaction>
+    <Transaction>2010/03/24 16:01:55.453.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\SalidasFrm.dfm</Transaction>
+    <Transaction>2010/03/24 16:25:01.281.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\SalidasFrm.pas=</Transaction>
+    <Transaction>2010/03/24 16:25:01.281.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\SalidasFrm.dfm=</Transaction>
+    <Transaction>2010/03/24 19:35:23.703.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\CommFrm.pas</Transaction>
+    <Transaction>2010/03/24 19:35:23.703.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\CommFrm.dfm</Transaction>
+    <Transaction>2010/03/27 20:18:55.068.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\DevelopFrm.pas</Transaction>
+    <Transaction>2010/03/27 20:18:55.099.dfm,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.dfm=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\DevelopFrm.dfm</Transaction>
+    <Transaction>2010/04/07 14:23:59.656.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Design.pas=</Transaction>
+    <Transaction>2010/04/07 14:23:59.671.dfm,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Design.dfm=</Transaction>
+    <Transaction>2010/04/08 17:50:00.312.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\DockForm.pas</Transaction>
+    <Transaction>2010/04/08 17:50:00.312.dfm,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Unit1.dfm=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\DockForm.dfm</Transaction>
+    <Transaction>2010/04/12 13:46:11.790.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Dll.pqw.pas</Transaction>
+    <Transaction>2010/04/12 13:46:26.837.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Dll.pqw.pas=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Dll.pas</Transaction>
+    <Transaction>2010/04/12 16:13:25.165.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\CommProgress.pas</Transaction>
+    <Transaction>2010/04/12 16:13:25.165.dfm,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\Unit1.dfm=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Controlador\CommProgress.dfm</Transaction>
+    <Transaction>2010/04/16 22:38:17.395.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Interfaz.pas</Transaction>
+    <Transaction>2010/04/16 22:47:58.833.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Interfaz.pas=</Transaction>
+    <Transaction>2010/04/16 22:49:33.223.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Serial.pas=</Transaction>
+  </Transactions>
+</BorlandProject>
