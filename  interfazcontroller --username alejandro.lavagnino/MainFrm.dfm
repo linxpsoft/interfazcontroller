@@ -113,7 +113,6 @@ object MainForm: TMainForm
       Category = 'Interfaz'
       Caption = 'Ventanas'
       ImageIndex = 229
-      OnExecute = WindowDesignerACtExecute
     end
   end
   object ImageList16: TImageList

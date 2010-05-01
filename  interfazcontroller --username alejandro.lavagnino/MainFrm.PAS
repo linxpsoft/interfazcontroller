@@ -22,7 +22,6 @@ type
     procedure HelpAbout1Execute(Sender: TObject);
     procedure Action1Execute(Sender: TObject);
     procedure ProgramarExecute(Sender: TObject);
-    procedure WindowDesignerACtExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -371,21 +370,8 @@ end;
 
 
 procedure TMainForm.ProgramarExecute(Sender: TObject);
-var
-  D: TDevelopForm;
 begin
-//  D := TDevelopForm.Create(Application);
   Application.Createform(TDevelopForm,DevelopForm);
-//  D.Show;
 end;
-
-procedure TMainForm.WindowDesignerACtExecute(Sender: TObject);
-var
-	W: TFormsForm;
-begin
-	W:= TFormsForm.Create(Application);
-    W.Show;
-end;
-
 
 end.

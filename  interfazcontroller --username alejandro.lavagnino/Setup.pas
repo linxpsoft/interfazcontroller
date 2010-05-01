@@ -73,7 +73,7 @@ uses Design;
 
 procedure TfrmSetup.FormCreate(Sender: TObject);
 begin
-  with Window.cmpFormDesigner do
+  with DesignWindow.cmpFormDesigner do
   begin
     if DesignerColor<>clNone then pnlDesignerColor.Color:=DesignerColor
     else pnlDesignerColor.Color:=clBtnFace;
@@ -97,7 +97,7 @@ procedure TfrmSetup.btnDesignerColorClick(Sender: TObject);
 begin
   with cldMain do
   begin
-    Color:=Window.cmpFormDesigner.DesignerColor;
+    Color:=DesignWindow.cmpFormDesigner.DesignerColor;
     if Execute then pnlDesignerColor.Color:=Color;
   end;
 end;
@@ -106,7 +106,7 @@ procedure TfrmSetup.btnGridColorClick(Sender: TObject);
 begin
   with cldMain do
   begin
-    Color:=Window.cmpFormDesigner.GridColor;
+    Color:=DesignWindow.cmpFormDesigner.GridColor;
     if Execute then pnlGridColor.Color:=Color;
   end;
 end;
@@ -114,7 +114,7 @@ end;
 procedure TfrmSetup.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if ModalResult=mrOk then
-    with Window.cmpFormDesigner do
+    with DesignWindow.cmpFormDesigner do
     begin
       DisplayGrid:=chbDisplayGrid.Checked;
       SnapToGrid:=chbSnapToGrid.Checked;
@@ -141,7 +141,7 @@ procedure TfrmSetup.btnNBorderClick(Sender: TObject);
 begin
   with cldMain do
   begin
-    Color:=Window.cmpFormDesigner.NormalGrabBorder;
+    Color:=DesignWindow.cmpFormDesigner.NormalGrabBorder;
     if Execute then pnlNBorder.Color:=Color;
   end;
 end;
@@ -150,7 +150,7 @@ procedure TfrmSetup.btnNFillClick(Sender: TObject);
 begin
   with cldMain do
   begin
-    Color:=Window.cmpFormDesigner.NormalGrabFill;
+    Color:=DesignWindow.cmpFormDesigner.NormalGrabFill;
     if Execute then pnlNFill.Color:=Color;
   end;
 end;
@@ -159,7 +159,7 @@ procedure TfrmSetup.btnLBorderClick(Sender: TObject);
 begin
   with cldMain do
   begin
-    Color:=Window.cmpFormDesigner.LockedGrabBorder;
+    Color:=DesignWindow.cmpFormDesigner.LockedGrabBorder;
     if Execute then pnlLBorder.Color:=Color;
   end;
 end;
@@ -168,7 +168,7 @@ procedure TfrmSetup.btnLFillClick(Sender: TObject);
 begin
   with cldMain do
   begin
-    Color:=Window.cmpFormDesigner.LockedGrabFill;
+    Color:=DesignWindow.cmpFormDesigner.LockedGrabFill;
     if Execute then pnlLFill.Color:=Color;
   end;
 end;

@@ -64,7 +64,7 @@
 				<Form>DevelopForm</Form>
 			</DCCReference>
 			<DCCReference Include="Design.pas">
-				<Form>Window</Form>
+				<Form>DesignWindow</Form>
 			</DCCReference>
 			<DCCReference Include="OIForm.pas">
 				<Form>frmObjectInspector</Form>
@@ -85,6 +85,12 @@
 			</DCCReference>
 			<DCCReference Include="..\DLL\InterfazSerial.pas"/>
 			<DCCReference Include="C:\Program Files\CodeGear\RAD Studio\6.0\VCL\jvcl\run\JvInterpreter_all.pas"/>
+			<DCCReference Include="WindowFrm.pas">
+				<Form>Window</Form>
+			</DCCReference>
+			<DCCReference Include="EventsFrm.pas">
+				<Form>EventsForm</Form>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

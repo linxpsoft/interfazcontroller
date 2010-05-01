@@ -13,7 +13,8 @@ uses
   JvComponentBase, JvInterpreter, JvInterpreterFm, JvExControls, JvEmbeddedForms,
   JvDesignSurface, JvExExtCtrls, JvExtComponent, JvCaptionPanel, ImgList,
   JvLookOut, CtrlDes, JvOutlookBar, Menus, Buttons, JvComponentPanel,
-  JvSpeedButton, JvExComCtrls, JvToolBar;
+  JvSpeedButton, JvExComCtrls, JvToolBar, uPSComponent_StdCtrls,
+  uPSComponent_Controls, uPSComponent_Forms, uPSComponent_Default, uPSComponent, uPSRuntime;
 
 type
   TDevelopForm = class(TForm)
@@ -37,7 +38,6 @@ type
     Pausar: TAction;
     Detener: TAction;
     SynAutoCorrect: TSynAutoCorrect;
-    JvPascal: TJvInterpreterFm;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     Editor: TSynEdit;
@@ -65,6 +65,25 @@ type
     sbtLoad: TToolButton;
     FormSave: TFileSaveAs;
     FormOpen: TFileOpen;
+    pmnMain: TPopupMenu;
+    mniAlignToGrid: TMenuItem;
+    mniBringToFront: TMenuItem;
+    mniSendToBack: TMenuItem;
+    mniSep1: TMenuItem;
+    mniCut: TMenuItem;
+    mniCopy: TMenuItem;
+    mniPaste: TMenuItem;
+    mniDelete: TMenuItem;
+    mniSelectAll: TMenuItem;
+    mniSep2: TMenuItem;
+    mniLock: TMenuItem;
+    ActionToolBar2: TActionToolBar;
+    PSImport_Classes1: TPSImport_Classes;
+    PSImport_DateUtils1: TPSImport_DateUtils;
+    PSImport_Forms1: TPSImport_Forms;
+    PSImport_Controls1: TPSImport_Controls;
+    PSImport_StdCtrls1: TPSImport_StdCtrls;
+    PS: TPSScriptDebugger;
     procedure EjecutarExecute(Sender: TObject);
     procedure SaveExecute(Sender: TObject);
     procedure FileSaveAsAccept(Sender: TObject);
@@ -72,17 +91,8 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure OpcionesEditorExecute(Sender: TObject);
     procedure FileNewExecute(Sender: TObject);
-    procedure PausarExecute(Sender: TObject);
     procedure DetenerExecute(Sender: TObject);
-    procedure PaxTimerTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure PaxScripterAssignScript(Sender: TPaxScripter);
-    procedure PaxScripterRunning(Sender: TPaxScripter; N: Integer;
-      var Handled: Boolean);
-    procedure JvPascalGetValue(Sender: TObject; Identifier: string;
-      var Value: Variant; Args: TJvInterpreterArgs; var Done: Boolean);
-    procedure JvPascalGetUnitSource(UnitName: string; var Source: string;
-      var Done: Boolean);
     procedure EmbedPanelDockOver(Sender: TObject; Source: TDragDockObject; X,
       Y: Integer; State: TDragState; var Accept: Boolean);
     procedure CPClick(Sender: TObject; Button: Integer);
@@ -98,6 +108,10 @@ type
     procedure sbtAlignClick(Sender: TObject);
     procedure sbtSetupClick(Sender: TObject);
     procedure FormSaveAccept(Sender: TObject);
+    procedure EmbedPanelUnDock(Sender: TObject; Client: TControl;
+      NewTarget: TWinControl; var Allow: Boolean);
+    procedure PSCompile(Sender: TPSScript);
+    procedure PSLine(Sender: TObject);
 
   private
     FileName: TFileName;
@@ -109,21 +123,21 @@ type
     ComponentClass: TComponentClass;
   end;
 
-  TConsole = class(TObject)
-      Console: TSynMemo;
-      procedure Write(s: Variant);
-      procedure Clear;
+  TEventHandler = class(TObject)
+      Control: TControl;
+      Event: string;
+      Source: TSTringList;
   end;
 
 var
   DevelopForm: TDevelopForm;
-  Console: TConsole;
+  EventsList: TStringList;
 
 implementation
 
 {$R *.dfm}
 
-uses MainFrm, OoMisc, OIForm, ToolForm, Design, Setup, FDMain;
+uses MainFrm, OoMisc, OIForm, ToolForm, Design, Setup, FDMain, WindowFrm;
 
 const
 	MAXCLASSES = 7;
@@ -140,36 +154,35 @@ var
     TTimer);
 
 
-
-procedure TConsole.Write(s: Variant);
+procedure PrintC(v: Variant);
 begin
-	Console.Lines.Add(VarToStr(s));
+	DevelopForm.Consola.Lines.Add(VarToStr(v));
+    DevelopForm.Consola.TopLine := DevelopForm.Consola.Lines.Count;
+    Application.ProcessMessages;
 end;
 
-procedure TConsole.Clear;
+procedure Wait(s: integer);
 begin
-    Console.Lines.Clear;
+	DelayTicks(s,True);
 end;
 
 procedure TDevelopForm.EjecutarExecute(Sender: TObject);
+var
+  Messages: string;
+  compiled: boolean;
+  i : integer;
 begin
-{  PaxScripter.ResetScripter;
-  if PaxScripter.Compile then
-  begin
-    Ejecutar.Enabled := False;
-    Pausar.Enabled := True;
-    Detener.Enabled := True;
-    PaxTimer.Enabled := true;
-    PaxScripter.Run;
-  end
-  else
-      ShowMessage(PaxScripter.ErrorDescription);
-  }
-//  JvPascal.Source := 'procedure CloseButtonClick(Sender: TObject);begin showmessage(''rtretertert3453454'');end;';
-//  JvPascal.Run;
-  JvPascal.RunUnit('test.pas');
-  JvPascal.Source := 'program A; uses test; '+Editor.Text;
-  JvPascal.Run;
+	PS.Script.Text := Editor.Text;
+    Compiled := PS.Compile;
+  	for i := 0 to PS.CompilerMessageCount -1 do
+    	Messages := Messages +
+                PS.CompilerMessages[i].MessageToString +
+                #13#10;
+   	DevelopForm.Consola.Lines.Add(Messages);
+    if Compiled then
+	    if not PS.Execute then
+    		ShowMessage('Error while executing script: '+
+                  PS.ExecErrorToString);
 end;
 
 
@@ -177,14 +190,20 @@ procedure TDevelopForm.EmbedPanelDockOver(Sender: TObject;
   Source: TDragDockObject; X, Y: Integer; State: TDragState;
   var Accept: Boolean);
 begin
-	Accept :=  Source.Control = Window;
+	Accept :=  Source.Control = DesignWindow;
+end;
+
+procedure TDevelopForm.EmbedPanelUnDock(Sender: TObject; Client: TControl;
+  NewTarget: TWinControl; var Allow: Boolean);
+begin
+	Allow := False;
 end;
 
 procedure TDevelopForm.CPClick(Sender: TObject; Button: Integer);
 begin
 	CP.SelectedButton := Button;
 	ComponentClass := cClasses[Button];
-  	with Window.cmpFormDesigner do
+  	with DesignWindow.cmpFormDesigner do
     	if Assigned(ComponentClass) then
     	begin
       		if not Locked then Lock;
@@ -195,11 +214,7 @@ end;
 
 procedure TDevelopForm.DetenerExecute(Sender: TObject);
 begin
-//    PaxProgram.Pause;
-//    PaxProgram.DiscardPause;
-    Detener.Enabled := False;
-    Pausar.Enabled := False;
-    Ejecutar.Enabled := True;
+      PS.Stop;
 end;
 
 procedure TDevelopForm.FileNewExecute(Sender: TObject);
@@ -237,14 +252,7 @@ procedure TDevelopForm.FormClose(Sender: TObject; var Action: TCloseAction);
 var
 	res: integer;
 begin
-{    if PaxProgram.IsRunning then
-    begin
-        PaxProgram.Pause;
-        PaxProgram.DiscardPause;
-    end;
-    if PaxProgram.IsPaused then
-    	PaxProgram.DiscardPause;
-}	if Editor.Modified then
+	if Editor.Modified then
     begin
         res := MessageDlg('¿Guardar el contenido del editor? Los cambios no guardados se perderán.',mtWarning,MBYESNOCANCEL,0);
         if res = mrYes then
@@ -263,6 +271,245 @@ begin
     end else
     	Action := caFree;
 end;
+
+
+procedure AddImage(AClass: TComponentClass; X,Y: integer; ImageList: TImageList);
+var
+   I: Timage;
+begin
+	I:= TImage.Create(nil);
+    RegisterClass(AClass);
+    with I.Picture do
+    begin
+	    Bitmap.LoadFromResourceName(Hinstance,AClass.ClassName);
+    	Bitmap.SetSize(X,Y);
+    	ImageList.AddMasked(Bitmap,clOlive) ;
+    end;
+end;
+
+function GetImage(AClass: TComponentClass; X,Y: integer): TBitmap;
+var
+   I: Timage;
+begin
+	I:= TImage.Create(nil);
+    RegisterClass(AClass);
+    with I.Picture do
+    begin
+	    Bitmap.LoadFromResourceName(Hinstance,AClass.ClassName);
+    	Bitmap.SetSize(X,Y);
+	    Result := Bitmap;
+    end;
+end;
+
+
+procedure TDevelopForm.FormCreate(Sender: TObject);
+var
+	i: integer;
+begin
+	CP.ShowHint := True;
+	CP.ButtonCount := MAXCLASSES + 1;
+    for i := 0 to MAXCLASSES do
+    with CP.Buttons[i] do
+    begin
+        Glyph := GetImage(cClasses[i],24,24);
+        Hint := cClasses[i].ClassName;
+        ShowHint := True;
+    end;
+   // Application.CreateForm(TfrmToolForm, frmToolForm);
+   // EmbedTop.DockLinkedForm;
+    Application.CreateForm(TDesignWindow, DesignWindow);
+    Application.CreateForm(TfrmObjectInspector, frmObjectInspector);
+    EmbedLeft.DockLinkedForm;
+    EmbedPanel.UseDockManager := True;
+    DesignWindow.ManualDock(EmbedPanel);
+    Application.CreateForm(TfrmSetup, frmSetup);
+    DesignWindow.cmpFormDesigner.Active := True;
+    EventsList := TStringList.Create;
+
+end;
+
+procedure TDevelopForm.FormSaveAccept(Sender: TObject);
+begin
+    With FormSave.Dialog do
+     DesignWindow.cmpFormDesigner.SaveToDFM(FileName,TDFMFormat(Pred(FilterIndex)));
+end;
+
+procedure TDevelopForm.OpcionesEditorExecute(Sender: TObject);
+var
+	Opts: TSynEditorOptionsContainer;
+begin
+	Opts:= TSynEditorOptionsContainer.Create(Editor);
+    Opts.Assign(Editor);
+	if EditorOptions.Execute(Opts) then
+    	Opts.AssignTo(Editor);
+end;
+
+procedure TDevelopForm.PSCompile(Sender: TPSScript);
+begin
+    Sender.AddFunction(@PrintC,'procedure Print(s: Variant)');
+    Sender.AddFunction(@Wait, 'procedure Wait(ticks: integer);');
+    Sender.AddFunction(@NewInterfaz,'function NewInterfaz(port: integer):word;');
+    Sender.AddFunction(@CloseInterfaz, 'procedure CloseInterfaz;');
+    Sender.AddFunction(@TalkInterfaz, 'procedure Interfaz(num: integer);');
+    Sender.AddFunction(@TalkMotor, 'procedure Outputs(Motors: Byte);');
+    Sender.AddFunction(@MotorOn, 'procedure setOn;');
+    Sender.AddFunction(@MotorOff, 'procedure setOff;');
+    Sender.AddFunction(@MotorInverse, 'procedure setInv;');
+    Sender.AddFunction(@MotorThisWay, 'procedure setDirA;');
+    Sender.AddFunction(@MotorThatWay, 'procedure setDirB;');
+    Sender.AddFunction(@MotorCoast, 'procedure setCoast;');
+    Sender.AddFunction(@MotorPower, 'procedure setPower(power: Byte);');
+    Sender.AddFunction(@TalkPAP, 'procedure Steppers(PAP: Byte);');
+    Sender.AddFunction(@PAPSpeed, 'procedure setSpeed(Speed: Byte);');
+    Sender.AddFunction(@PAPSteps, 'procedure setSteps(Steps: Byte);');
+    Sender.AddFunction(@ServoPos, 'procedure ServoPos(Pos: Byte);');
+    Sender.AddFunction(@TalkSensor, 'procedure Sensor(Sensor: Byte);');
+    Sender.AddFunction(@GetSensor, 'function GetSensor: Word;');
+    Sender.AddFunction(@SensorBurst, 'procedure Burst(Sensors: Byte; Slow: Byte);');
+    Sender.AddFunction(@StopBurst, 'procedure StopBurst;');
+    Sender.AddFunction(@GetBurstValue, 'function GetBurstValue: Word;');
+    Sender.AddFunction(@GetBurstTick, 'function GetBurstTick: Word;');
+    Sender.AddFunction(@GetLastBurstValue, 'function GetLastBurstValue: Word;');
+    Sender.AddFunction(@BurstCount, 'function BurstCount: Word;');
+    Sender.AddFunction(@NextBurst, 'function NextBurst: Word;');
+    Sender.AddFunction(@ClearBurst, 'procedure ClearBurst;');
+end;
+
+procedure TDevelopForm.PSLine(Sender: TObject);
+begin
+	Application.ProcessMessages;
+end;
+
+procedure TDevelopForm.SaveExecute(Sender: TObject);
+begin
+    if FileName = '' then
+    begin
+        if FileSaveAs.Dialog.Execute then
+        begin
+            FileName := FileSaveAs.Dialog.FileName;
+            Editor.Lines.SaveToFile(FileName);
+            Editor.Modified := False;
+        end
+    end	else
+    begin
+	    Editor.Lines.SaveToFile(FileName);
+        Editor.Modified := False;
+    end;
+
+end;
+
+procedure TDevelopForm.sbtAlignClick(Sender: TObject);
+begin
+  DesignWindow.cmpFormDesigner.AlignDialog;
+end;
+
+procedure TDevelopForm.sbtSetupClick(Sender: TObject);
+begin
+ frmSetup.ShowModal;
+end;
+
+procedure TDevelopForm.eveLock(Sender: TObject);
+var
+  i,IDX: Integer;
+begin
+  if Sender<>sbtLock then sbtLock.Down:=not sbtLock.Down;
+  {$IFDEF TFD1COMPATIBLE}
+  with DesignWindow.cmpFormDesigner,FixedControls do
+  {$ELSE}
+  with DesignWindow.cmpFormDesigner,LockedControls do
+  {$ENDIF}
+    for i:=0 to Pred(ControlCount) do
+    begin
+      IDX:=IndexOf(Controls[i].Name);
+      if sbtLock.Down then
+      begin
+        if IDX=-1 then Add(Controls[i].Name);
+      end
+      else
+        if IDX<>-1 then Delete(IDX);
+    end;
+end;
+
+procedure TDevelopForm.eveAlign(Sender: TObject);
+var
+  i: Integer;
+begin
+  with DesignWindow.cmpFormDesigner do
+    for i:=0 to Pred(ControlCount) do
+      if not IsLocked(Controls[i]) then
+        AlignToGrid(Controls[i]);
+end;
+
+procedure TDevelopForm.eveDelete(Sender: TObject);
+begin
+  if sbtDelete.Enabled then
+    with DesignWindow.cmpFormDesigner do
+      while ControlCount>0 do Controls[0].Free;
+  with frmObjectInspector,cmbObjectInspector do
+  begin
+    Root:=DesignWindow;
+    Instance:=DesignWindow;
+    cmpObjectInspector.Instance:=DesignWindow;
+  end;
+end;
+
+procedure TDevelopForm.eveCut(Sender: TObject);
+begin
+  if sbtCut.Enabled then
+    DesignWindow.cmpFormDesigner.CutToClipboard;
+end;
+
+procedure TDevelopForm.evePaste(Sender: TObject);
+begin
+  if sbtPaste.Enabled then
+    DesignWindow.cmpFormDesigner.PasteFromClipboard;
+end;
+
+procedure TDevelopForm.eveCopy(Sender: TObject);
+begin
+  if sbtCopy.Enabled then
+    DesignWindow.cmpFormDesigner.CopyToClipboard;
+end;
+
+procedure TDevelopForm.eveSelectAll(Sender: TObject);
+begin
+  DesignWindow.cmpFormDesigner.SelectAll;
+end;
+
+procedure TDevelopForm.eveAlignPalette(Sender: TObject);
+begin
+  DesignWindow.cmpFormDesigner.ShowAlignmentPalette;
+end;
+
+procedure TDevelopForm.eveTabOrder(Sender: TObject);
+begin
+  DesignWindow.cmpFormDesigner.TabOrderDialog;
+end;
+
+
+end.
+
+{  // CREAR UNA UNIDAD PARA UN FORM
+   L := TStringList.Create;
+  try
+    with PaxDfm.UsedUnits do
+    begin
+      Add('Controls');
+      Add('StdCtrls');
+      Add('Graphics');
+      Add('Forms');
+      Add('Dialogs');  hace falta ??
+    end;
+
+    PaxDfm.Parse('test.dfm', L);
+//    PaxScripter.AddModule('1', 'paxPascal');
+//    PaxScripter.AddCode('Main', L.Text);
+  Editor.Text := L.Text;
+  finally
+    L.Free;
+  end;
+}
+{
 
 procedure JvConsoleWrite( var Value :Variant; Args :TJvInterpreterArgs );
 begin
@@ -386,61 +633,7 @@ begin
 	ClearBurst;
 end;
 
-procedure AddImage(AClass: TComponentClass; X,Y: integer; ImageList: TImageList);
-var
-   I: Timage;
-begin
-	I:= TImage.Create(nil);
-    RegisterClass(AClass);
-    with I.Picture do
-    begin
-	    Bitmap.LoadFromResourceName(Hinstance,AClass.ClassName);
-    	Bitmap.SetSize(X,Y);
-    	ImageList.AddMasked(Bitmap,clOlive) ;
-    end;
-end;
-
-function GetImage(AClass: TComponentClass; X,Y: integer): TBitmap;
-var
-   I: Timage;
-begin
-	I:= TImage.Create(nil);
-    RegisterClass(AClass);
-    with I.Picture do
-    begin
-	    Bitmap.LoadFromResourceName(Hinstance,AClass.ClassName);
-    	Bitmap.SetSize(X,Y);
-	    Result := Bitmap;
-    end;
-end;
-
-
-procedure TDevelopForm.FormCreate(Sender: TObject);
-var
-	i: integer;
-begin
-	CP.ShowHint := True;
-	CP.ButtonCount := MAXCLASSES + 1;
-    for i := 0 to MAXCLASSES do
-    with CP.Buttons[i] do
-    begin
-        Glyph := GetImage(cClasses[i],24,24);
-        Hint := cClasses[i].ClassName;
-        ShowHint := True;
-    end;
-    Application.CreateForm(TfrmToolForm, frmToolForm);
-   // EmbedTop.DockLinkedForm;
-    Application.CreateForm(TfrmObjectInspector, frmObjectInspector);
-    EmbedLeft.DockLinkedForm;
-    Application.CreateForm(TWindow, Window);
-    EmbedPanel.UseDockManager := True;
-    Window.ManualDock(EmbedPanel);
-    Application.CreateForm(TfrmSetup, frmSetup);
-    Window.cmpFormDesigner.Active := True;
-    Console:= TConsole.Create;
-    Console.Console := Consola;
-
- with GlobalJvInterpreterAdapter  do
+  with GlobalJvInterpreterAdapter  do
  begin
 	AddFunction('Consola','Print',JvConsoleWrite,1,[varString],varEmpty);
 	AddFunction('Consola','Clear',JvConsoleClear,0,[],varEmpty);
@@ -473,228 +666,7 @@ begin
 	AddFunction('Interfaz','clearBurst',JvClearBurst,0,[],varEmpty);
 
  end;
-end;
 
-procedure TDevelopForm.FormSaveAccept(Sender: TObject);
-begin
-    With FormSave.Dialog do
-     Window.cmpFormDesigner.SaveToDFM(FileName,TDFMFormat(Pred(FilterIndex)));
-end;
-
-procedure TDevelopForm.JvPascalGetUnitSource(UnitName: string;
-  var Source: string; var Done: Boolean);
-begin
-	if UnitName = 'form' then
-    begin
-         Source := 'Unit test;procedure CloseButtonClick(Sender: TObject);begin 	Ad; end; procedure Main; begin  Button1.OnClick := CloseButtonClick; end; end.';
-         Done := True;
-    end;
-end;
-
-procedure TDevelopForm.JvPascalGetValue(Sender: TObject; Identifier: string;
-  var Value: Variant; Args: TJvInterpreterArgs; var Done: Boolean);
-var
-  I: Integer;
-begin
-  if AnsiSameText(Identifier, 'Self') then
-  begin
-    Value := O2V(Window);
-    Done := True;
-    Exit;
-  end;
-
-  for I := 0 to Window.ComponentCount - 1 do
-  begin
-    if AnsiSameText(Identifier, Window.Components[I].Name) then
-    begin
-      Value := O2V(Window.Components[I]);
-      Done := True;
-      Exit;
-    end;
-  end;
-end;
-
-procedure TDevelopForm.OpcionesEditorExecute(Sender: TObject);
-var
-	Opts: TSynEditorOptionsContainer;
-begin
-	Opts:= TSynEditorOptionsContainer.Create(Editor);
-    Opts.Assign(Editor);
-	if EditorOptions.Execute(Opts) then
-    	Opts.AssignTo(Editor);
-end;
-
-procedure TDevelopForm.PausarExecute(Sender: TObject);
-begin
-{
-	if PaxProgram.IsPaused then
-    begin
-    	PaxProgram.Resume;
-        Pausar.ImageIndex := 108;
-    end else
-    begin
-    	PaxProgram.Pause;
-        Editor.CaretY := PaxDebug.SourceLineNumber + 1;
-        Pausar.ImageIndex := 109;
-    end;
-}
-end;
-
-procedure TDevelopForm.PaxScripterAssignScript(Sender: TPaxScripter);
-begin
-//  PaxScripter.AddModule('Main', 'paxPascal');
-//  PaxScripter.AddCode('Main', Editor.Text);
-end;
-
-procedure TDevelopForm.PaxScripterRunning(Sender: TPaxScripter; N: Integer;
-  var Handled: Boolean);
-begin
-	Application.ProcessMessages;
-end;
-
-procedure TDevelopForm.PaxTimerTimer(Sender: TObject);
-begin
-{
-    if (not PaxProgram.IsPaused) and (not PaxDebug.IsPaused) and (not PaxProgram.IsRunning) then
-    begin
-	    Ejecutar.Enabled := True;
-    	Pausar.Enabled := False;
-	    Detener.Enabled := False;
-    	PaxTimer.Enabled := False;
-    end;
-}
-end;
-
-procedure TDevelopForm.SaveExecute(Sender: TObject);
-begin
-    if FileName = '' then
-    begin
-        if FileSaveAs.Dialog.Execute then
-        begin
-            FileName := FileSaveAs.Dialog.FileName;
-            Editor.Lines.SaveToFile(FileName);
-            Editor.Modified := False;
-        end
-    end	else
-    begin
-	    Editor.Lines.SaveToFile(FileName);
-        Editor.Modified := False;
-    end;
-
-end;
-
-procedure TDevelopForm.sbtAlignClick(Sender: TObject);
-begin
-  Window.cmpFormDesigner.AlignDialog;
-end;
-
-procedure TDevelopForm.sbtSetupClick(Sender: TObject);
-begin
- frmSetup.ShowModal;
-end;
-
-procedure TDevelopForm.eveLock(Sender: TObject);
-var
-  i,IDX: Integer;
-begin
-  if Sender<>sbtLock then sbtLock.Down:=not sbtLock.Down;
-  {$IFDEF TFD1COMPATIBLE}
-  with Window.cmpFormDesigner,FixedControls do
-  {$ELSE}
-  with Window.cmpFormDesigner,LockedControls do
-  {$ENDIF}
-    for i:=0 to Pred(ControlCount) do
-    begin
-      IDX:=IndexOf(Controls[i].Name);
-      if sbtLock.Down then
-      begin
-        if IDX=-1 then Add(Controls[i].Name);
-      end
-      else
-        if IDX<>-1 then Delete(IDX);
-    end;
-end;
-
-procedure TDevelopForm.eveAlign(Sender: TObject);
-var
-  i: Integer;
-begin
-  with Window.cmpFormDesigner do
-    for i:=0 to Pred(ControlCount) do
-      if not IsLocked(Controls[i]) then
-        AlignToGrid(Controls[i]);
-end;
-
-procedure TDevelopForm.eveDelete(Sender: TObject);
-begin
-  if sbtDelete.Enabled then
-    with Window.cmpFormDesigner do
-      while ControlCount>0 do Controls[0].Free;
-  with frmObjectInspector,cmbObjectInspector do
-  begin
-    Root:=Window;
-    Instance:=Window;
-    cmpObjectInspector.Instance:=Window;
-  end;
-end;
-
-procedure TDevelopForm.eveCut(Sender: TObject);
-begin
-  if sbtCut.Enabled then
-    Window.cmpFormDesigner.CutToClipboard;
-end;
-
-procedure TDevelopForm.evePaste(Sender: TObject);
-begin
-  if sbtPaste.Enabled then
-    Window.cmpFormDesigner.PasteFromClipboard;
-end;
-
-procedure TDevelopForm.eveCopy(Sender: TObject);
-begin
-  if sbtCopy.Enabled then
-    Window.cmpFormDesigner.CopyToClipboard;
-end;
-
-procedure TDevelopForm.eveSelectAll(Sender: TObject);
-begin
-  Window.cmpFormDesigner.SelectAll;
-end;
-
-procedure TDevelopForm.eveAlignPalette(Sender: TObject);
-begin
-  Window.cmpFormDesigner.ShowAlignmentPalette;
-end;
-
-procedure TDevelopForm.eveTabOrder(Sender: TObject);
-begin
-  Window.cmpFormDesigner.TabOrderDialog;
-end;
-
-
-end.
-
-{  // CREAR UNA UNIDAD PARA UN FORM
-   L := TStringList.Create;
-  try
-    with PaxDfm.UsedUnits do
-    begin
-      Add('Controls');
-      Add('StdCtrls');
-      Add('Graphics');
-      Add('Forms');
-      Add('Dialogs');  hace falta ??
-    end;
-
-    PaxDfm.Parse('test.dfm', L);
-//    PaxScripter.AddModule('1', 'paxPascal');
-//    PaxScripter.AddCode('Main', L.Text);
-  Editor.Text := L.Text;
-  finally
-    L.Free;
-  end;
-}
-{
 //  PaxScripter.RegisterObject('Form',frmDesign);
   RegisterClassType(TConsole, -1);
   RegisterMethod(TConsole,'procedure Write(s: Variant);',@TConsole.Write);

@@ -91,7 +91,7 @@ uses Design, Setup, About, OIForm;
 procedure TfrmToolForm.sbtPaletteButtonClick(Sender: TObject);
 begin
   ComponentClass:=(Sender as TPaletteButton).ComponentClass;
-  with Window.cmpFormDesigner do
+  with DesignWindow.cmpFormDesigner do
     if Assigned(ComponentClass) then
     begin
       if not Locked then Lock;
@@ -124,9 +124,9 @@ var
 begin
   if Sender<>sbtLock then sbtLock.Down:=not sbtLock.Down;
   {$IFDEF TFD1COMPATIBLE}
-  with Window.cmpFormDesigner,FixedControls do
+  with DesignWindow.cmpFormDesigner,FixedControls do
   {$ELSE}
-  with Window.cmpFormDesigner,LockedControls do
+  with DesignWindow.cmpFormDesigner,LockedControls do
   {$ENDIF}
     for i:=0 to Pred(ControlCount) do
     begin
@@ -149,7 +149,7 @@ procedure TfrmToolForm.eveAlign(Sender: TObject);
 var
   i: Integer;
 begin
-  with Window.cmpFormDesigner do
+  with DesignWindow.cmpFormDesigner do
     for i:=0 to Pred(ControlCount) do
       if not IsLocked(Controls[i]) then
         AlignToGrid(Controls[i]);
@@ -158,46 +158,46 @@ end;
 procedure TfrmToolForm.eveDelete(Sender: TObject);
 begin
   if sbtDelete.Enabled then
-    with Window.cmpFormDesigner do
+    with DesignWindow.cmpFormDesigner do
       while ControlCount>0 do Controls[0].Free;
   with frmObjectInspector,cmbObjectInspector do
   begin
-    Root:=Window;
-    Instance:=Window;
-    cmpObjectInspector.Instance:=Window;
+    Root:=DesignWindow;
+    Instance:=DesignWindow;
+    cmpObjectInspector.Instance:=DesignWindow;
   end;
 end;
 
 procedure TfrmToolForm.eveCut(Sender: TObject);
 begin
   if sbtCut.Enabled then
-    Window.cmpFormDesigner.CutToClipboard;
+    DesignWindow.cmpFormDesigner.CutToClipboard;
 end;
 
 procedure TfrmToolForm.evePaste(Sender: TObject);
 begin
   if sbtPaste.Enabled then
-    Window.cmpFormDesigner.PasteFromClipboard;
+    DesignWindow.cmpFormDesigner.PasteFromClipboard;
 end;
 
 procedure TfrmToolForm.eveCopy(Sender: TObject);
 begin
   if sbtCopy.Enabled then
-    Window.cmpFormDesigner.CopyToClipboard;
+    DesignWindow.cmpFormDesigner.CopyToClipboard;
 end;
 
 procedure TfrmToolForm.sbtOpenClick(Sender: TObject);
 begin
   with opdMain do
     if Execute then
-      Window.cmpFormDesigner.LoadFromDFM(FileName,TDFMFormat(Pred(FilterIndex)));
+      DesignWindow.cmpFormDesigner.LoadFromDFM(FileName,TDFMFormat(Pred(FilterIndex)));
 end;
 
 procedure TfrmToolForm.sbtSaveClick(Sender: TObject);
 begin
   with svdMain do
     if Execute then
-      Window.cmpFormDesigner.SaveToDFM(FileName,TDFMFormat(Pred(FilterIndex)));
+      DesignWindow.cmpFormDesigner.SaveToDFM(FileName,TDFMFormat(Pred(FilterIndex)));
 end;
 
 procedure TfrmToolForm.sbtSetupClick(Sender: TObject);
@@ -214,7 +214,7 @@ procedure TfrmToolForm.mniBringToFrontClick(Sender: TObject);
 var
   i: Integer;
 begin
-  with Window.cmpFormDesigner do
+  with DesignWindow.cmpFormDesigner do
   begin
     for i:=Pred(ControlCount) downto 0 do Controls[i].BringToFront;
     Update;
@@ -225,7 +225,7 @@ procedure TfrmToolForm.mniSendToBackClick(Sender: TObject);
 var
   i: Integer;
 begin
-  with Window.cmpFormDesigner do
+  with DesignWindow.cmpFormDesigner do
   begin
     for i:=Pred(ControlCount) downto 0 do Controls[i].SendToBack;
     Update;
@@ -234,27 +234,27 @@ end;
 
 procedure TfrmToolForm.sbtAlignClick(Sender: TObject);
 begin
-  Window.cmpFormDesigner.AlignDialog;
+  DesignWindow.cmpFormDesigner.AlignDialog;
 end;
 
 procedure TfrmToolForm.sbtSizeClick(Sender: TObject);
 begin
-  Window.cmpFormDesigner.SizeDialog;
+  DesignWindow.cmpFormDesigner.SizeDialog;
 end;
 
 procedure TfrmToolForm.eveSelectAll(Sender: TObject);
 begin
-  Window.cmpFormDesigner.SelectAll;
+  DesignWindow.cmpFormDesigner.SelectAll;
 end;
 
 procedure TfrmToolForm.eveAlignPalette(Sender: TObject);
 begin
-  Window.cmpFormDesigner.ShowAlignmentPalette;
+  DesignWindow.cmpFormDesigner.ShowAlignmentPalette;
 end;
 
 procedure TfrmToolForm.eveTabOrder(Sender: TObject);
 begin
-  Window.cmpFormDesigner.TabOrderDialog;
+  DesignWindow.cmpFormDesigner.TabOrderDialog;
 end;
 
 procedure TfrmToolForm.sbtObjectInspectorClick(Sender: TObject);
@@ -275,7 +275,7 @@ end;
 
 procedure TfrmToolForm.sbtRunClick(Sender: TObject);
 begin
-  Window.cmpFormDesigner.Active:=not (Sender as TSpeedButton).Down;
+  DesignWindow.cmpFormDesigner.Active:=not (Sender as TSpeedButton).Down;
 end;
 
 end.

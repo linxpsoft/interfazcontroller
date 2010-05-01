@@ -14,7 +14,7 @@ uses
 
 type
 
-  TWindow = class(TForm)
+  TDesignWindow = class(TForm)
     cmpFormDesigner: TFormDesigner;
     procedure FormShow(Sender: TObject);
     {$IFNDEF VER100}
@@ -38,6 +38,8 @@ type
     procedure ShowNo(Sender: TObject);
     procedure cmpFormDesignerChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure cmpFormDesignerContextPopup(Sender: TObject;
+      var Handled: Boolean);
   private
     { Private declarations }
     procedure UpdateInfo;
@@ -47,14 +49,14 @@ type
   end;
 
 var
-  Window: TWindow;
+  DesignWindow: TDesignWindow;
 
 implementation
 
 uses FDCmpPal, OIForm, DevelopFrm, ToolForm;
 {$R *.DFM}
 
-procedure TWindow.UpdateInfo;
+procedure TDesignWindow.UpdateInfo;
 begin
   if Assigned(cmpFormDesigner.Control) then
     if cmpFormDesigner.Component is TControl then
@@ -68,7 +70,7 @@ begin
   else Caption:='[no selected controls]';
 end;
 
-function TWindow.AutoName(Component: TComponent): Boolean;
+function TDesignWindow.AutoName(Component: TComponent): Boolean;
 var
   i: Integer;
   CN: string;
@@ -91,17 +93,19 @@ begin
     end;
 end;
 
-procedure TWindow.FormShow(Sender: TObject);
+procedure TDesignWindow.FormShow(Sender: TObject);
 begin
   cmpFormDesigner.Active:=True;
+{
   with frmObjectInspector do
   begin
     //cmbObjectInspector.Root:=Self;
     Show;
   end;
+}
 end;
 
-procedure TWindow.cmpFormDesignerMessage(Sender: TObject; var Msg: TMSG);
+procedure TDesignWindow.cmpFormDesignerMessage(Sender: TObject; var Msg: TMSG);
 
 var
   WinControl: TWinControl;
@@ -175,7 +179,7 @@ begin
     end;
 end;
 
-procedure TWindow.cmpFormDesignerSelectControl(Sender: TObject;
+procedure TDesignWindow.cmpFormDesignerSelectControl(Sender: TObject;
   TheControl: TControl);
 var
   E: Boolean;
@@ -183,37 +187,38 @@ begin
   if Assigned(TheControl) then
     frmObjectInspector.cmpObjectInspector.Instance := TheControl;
     {$IFDEF TFD1COMPATIBLE}
-//    frmToolForm.sbtLock.Down:=cmpFormDesigner.FixedControls.IndexOf(TheControl.Name)<>-1;
+//    DevelopForm.sbtLock.Down:=cmpFormDesigner.FixedControls.IndexOf(TheControl.Name)<>-1;
     {$ELSE}
    	if TheControl <> nil then
-	    frmTooLForm.sbtLock.Down:=cmpFormDesigner.LockedControls.IndexOf(TheControl.Name)>= 0;
+	    DevelopForm.sbtLock.Down:=cmpFormDesigner.LockedControls.IndexOf(TheControl.Name)>= 0;
     {$ENDIF}
   UpdateInfo;
   E:=Assigned(cmpFormDesigner.Control);
-  with frmToolForm do
+//  with frmToolForm do
+  with DevelopForm do
   begin
     sbtLock.Enabled:=E;
     sbtAlignToGrid.Enabled:=E;
     sbtAlign.Enabled:=E;
-    sbtSize.Enabled:=E;
+   // sbtSize.Enabled:=E;
     sbtDelete.Enabled:=E;
-    mniLock.Enabled:=E;
-    mniAlignToGrid.Enabled:=E;
-    mniDelete.Enabled:=E;
+   // mniLock.Enabled:=E;
+   // mniAlignToGrid.Enabled:=E;
+   // mniDelete.Enabled:=E;
     sbtCopy.Enabled:=E;
     sbtCut.Enabled:=E;
-    mniCopy.Enabled:=E;
-    mniCut.Enabled:=E;
+   // mniCopy.Enabled:=E;
+   // mniCut.Enabled:=E;
   end;
 end;
 
-procedure TWindow.FormActivate(Sender: TObject);
+procedure TDesignWindow.FormActivate(Sender: TObject);
 begin
   ActiveControl:=nil;
   cmpFormDesigner.Update;
 end;
 
-procedure TWindow.cmpFormDesignerLoadControl(Sender: TObject;
+procedure TDesignWindow.cmpFormDesignerLoadControl(Sender: TObject;
   TheControl: TControl; IniFile: TIniFile);
 begin
   if TheControl=Self then
@@ -226,7 +231,7 @@ begin
     end;
 end;
 
-procedure TWindow.cmpFormDesignerSaveControl(Sender: TObject;
+procedure TDesignWindow.cmpFormDesignerSaveControl(Sender: TObject;
   TheControl: TControl; IniFile: TIniFile);
 begin
   if TheControl=Self then
@@ -245,17 +250,24 @@ begin
       end;
 end;
 
-procedure TWindow.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TDesignWindow.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
 	Action := caNone;
 end;
 
-procedure TWindow.FormCreate(Sender: TObject);
+procedure TDesignWindow.FormCreate(Sender: TObject);
 begin
-  cmpFormDesigner.PopupMenu:=frmToolForm.pmnMain;
+  cmpFormDesigner.PopupMenu:=DevelopForm.pmnMain;
 end;
 
-procedure TWindow.cmpFormDesignerControlDblClick(Sender: TObject;
+procedure TDesignWindow.cmpFormDesignerContextPopup(Sender: TObject;
+  var Handled: Boolean);
+begin
+	if cmpFormDesigner.Control.ClassName = 'TButton' then
+    	cmpFormDesigner.PopupMenu := nil;
+end;
+
+procedure TDesignWindow.cmpFormDesignerControlDblClick(Sender: TObject;
   TheControl: TControl);
 begin
   if Assigned(TheControl) then
@@ -267,7 +279,7 @@ begin
   end;
 end;
 
-procedure TWindow.cmpFormDesignerKeyDown(Sender: TObject;
+procedure TDesignWindow.cmpFormDesignerKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   with frmToolForm do
@@ -283,17 +295,17 @@ begin
     end;
 end;
 
-procedure TWindow.ShowYes(Sender: TObject);
+procedure TDesignWindow.ShowYes(Sender: TObject);
 begin
   ShowMessage('YES');
 end;
 
-procedure TWindow.ShowNo(Sender: TObject);
+procedure TDesignWindow.ShowNo(Sender: TObject);
 begin
   ShowMessage('NO');
 end;
 
-procedure TWindow.cmpFormDesignerChange(Sender: TObject);
+procedure TDesignWindow.cmpFormDesignerChange(Sender: TObject);
 begin
   UpdateInfo;
 end;

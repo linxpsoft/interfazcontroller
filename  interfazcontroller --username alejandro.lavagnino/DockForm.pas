@@ -45,13 +45,13 @@ begin
 	frmToolForm.ManualDock(Panel1);
     Application.CreateForm(TfrmObjectInspector, frmObjectInspector);
     frmObjectInspector.ManualDock(Panel2);
-    Application.CreateForm(TWindow, Window);
-    Window.ManualDock(Panel3);
+    Application.CreateForm(TDesignWindow, DesignWindow);
+    DesignWindow.ManualDock(Panel3);
     Application.CreateForm(TfrmSetup, frmSetup);
     frmToolForm.Show;
     frmObjectInspector.Show;
-    Window.Show;
-    Window.cmpFormDesigner.Active := True;
+    DesignWindow.Show;
+    DesignWindow.cmpFormDesigner.Active := True;
 end;
 
 procedure TFormsForm.Panel1DockOver(Sender: TObject; Source: TDragDockObject; X,
@@ -81,13 +81,13 @@ end;
 procedure TFormsForm.Panel3DockOver(Sender: TObject; Source: TDragDockObject; X,
   Y: Integer; State: TDragState; var Accept: Boolean);
 begin
-	Accept :=  Source.Control = Window;
+	Accept :=  Source.Control = DesignWindow;
 end;
 
 procedure TFormsForm.Panel3StartDock(Sender: TObject;
   var DragObject: TDragDockObject);
 begin
-	Window.cmpFormDesigner.Update;
+	DesignWindow.cmpFormDesigner.Update;
 end;
 
 end.
