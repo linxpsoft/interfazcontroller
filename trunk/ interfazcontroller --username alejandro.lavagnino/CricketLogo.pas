@@ -618,7 +618,6 @@ begin
         L2 := StaStackPop;
         L := L2;
         L.Add(CLIST);
-        L1 := StaStackPop;
         L.Add(L1.IntCount + 1);  // + EOL
         L := ListMerge(L,L1);
         L.Add(CEOL);
@@ -1189,6 +1188,7 @@ begin
             end;
         end;
         for i := 0 to 3 do j := j + Motors[i];
+        L.Add(CINT8);
         L.Add(j);
         StaStackPush(L);
     end; //  <MotorList> ::= '[' <MotorListItems> ']'

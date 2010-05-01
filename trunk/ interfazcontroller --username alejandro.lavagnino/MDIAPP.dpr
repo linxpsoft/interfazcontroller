@@ -8,7 +8,7 @@ uses
   MotorFrm in 'MotorFrm.pas' {MotorForm},
   CommFrm in 'CommFrm.pas' {CommForm},
   DevelopFrm in 'DevelopFrm.pas' {DevelopForm},
-  Design in 'Design.pas' {Window},
+  Design in 'Design.pas' {DesignWindow},
   OIForm in 'OIForm.pas' {frmObjectInspector},
   Setup in 'Setup.pas' {frmSetup},
   ToolForm in 'ToolForm.pas' {frmToolForm},
@@ -17,7 +17,9 @@ uses
   CricketLogo in 'CricketLogo.pas',
   CommProgress in 'CommProgress.pas' {CommProgFrm},
   InterfazSerial in '..\DLL\InterfazSerial.pas',
-  JvInterpreter_all in 'C:\Program Files\CodeGear\RAD Studio\6.0\VCL\jvcl\run\JvInterpreter_all.pas';
+  JvInterpreter_all in 'C:\Program Files\CodeGear\RAD Studio\6.0\VCL\jvcl\run\JvInterpreter_all.pas',
+  WindowFrm in 'WindowFrm.pas' {Window},
+  EventsFrm in 'EventsFrm.pas' {EventsForm};
 
 {$R *.RES}
 
@@ -27,5 +29,7 @@ begin
   Application.CreateForm(TAboutBox, AboutBox);
   Application.CreateForm(TCommForm, CommForm);
   Application.CreateForm(TCommProgFrm, CommProgFrm);
+  Application.CreateForm(TWindow, Window);
+  Application.CreateForm(TEventsForm, EventsForm);
   Application.Run;
 end.

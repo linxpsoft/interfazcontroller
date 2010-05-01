@@ -60,7 +60,7 @@ object DevelopForm: TDevelopForm
     Top = 52
     Width = 899
     Height = 487
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 3
     object TabSheet1: TTabSheet
@@ -77,9 +77,9 @@ object DevelopForm: TDevelopForm
       end
       object Editor: TSynEdit
         Left = 0
-        Top = 0
+        Top = 26
         Width = 891
-        Height = 355
+        Height = 329
         Align = alClient
         ActiveLineColor = 15400959
         Font.Charset = DEFAULT_CHARSET
@@ -132,6 +132,18 @@ object DevelopForm: TDevelopForm
           WordWrap = True
         end
       end
+      object ActionToolBar2: TActionToolBar
+        Left = 0
+        Top = 0
+        Width = 891
+        Height = 26
+        ActionManager = ActionManager
+        Caption = 'ActionToolBar2'
+        ColorMap.HighlightColor = 16382458
+        ColorMap.BtnSelectedColor = clBtnFace
+        ColorMap.UnusedColor = 16382458
+        Spacing = 0
+      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Ventanas'
@@ -153,10 +165,6 @@ object DevelopForm: TDevelopForm
         Height = 459
         Align = alClient
         TabOrder = 1
-        ExplicitLeft = 280
-        ExplicitTop = 112
-        ExplicitWidth = 313
-        ExplicitHeight = 243
         object CP: TJvComponentPanel
           Left = 1
           Top = 1
@@ -164,9 +172,6 @@ object DevelopForm: TDevelopForm
           Height = 28
           Align = alTop
           OnClick = CPClick
-          ExplicitLeft = 40
-          ExplicitTop = 57
-          ExplicitWidth = 851
         end
         object EmbedPanel: TScrollBox
           Left = 1
@@ -179,10 +184,7 @@ object DevelopForm: TDevelopForm
           DockSite = True
           TabOrder = 1
           OnDockOver = EmbedPanelDockOver
-          ExplicitLeft = -41
-          ExplicitTop = -89
-          ExplicitWidth = 519
-          ExplicitHeight = 402
+          OnUnDock = EmbedPanelUnDock
         end
         object JvToolBar1: TJvToolBar
           Left = 1
@@ -378,6 +380,29 @@ object DevelopForm: TDevelopForm
             Caption = '-'
           end
           item
+            Action = Ejecutar
+            Caption = '&Ejecutar'
+            ImageIndex = 163
+            ShortCut = 120
+          end
+          item
+            Action = Pausar
+            Caption = '&Pausar'
+            ImageIndex = 108
+          end
+          item
+            Action = Detener
+            Caption = '&Detener'
+            ImageIndex = 115
+            ShowCaption = False
+          end>
+        ActionBar = ActionToolBar1
+      end
+      item
+      end
+      item
+        Items = <
+          item
             Action = EditUndo1
             ImageIndex = 33
             ShowCaption = False
@@ -403,25 +428,8 @@ object DevelopForm: TDevelopForm
           end
           item
             Caption = '-'
-          end
-          item
-            Action = Ejecutar
-            Caption = '&Ejecutar'
-            ImageIndex = 163
-            ShortCut = 120
-          end
-          item
-            Action = Pausar
-            Caption = 'Pau&sar'
-            ImageIndex = 108
-          end
-          item
-            Action = Detener
-            Caption = '&Detener'
-            ImageIndex = 115
-            ShowCaption = False
           end>
-        ActionBar = ActionToolBar1
+        ActionBar = ActionToolBar2
       end>
     Images = MainForm.ImageList16
     Left = 776
@@ -506,17 +514,16 @@ object DevelopForm: TDevelopForm
     object Pausar: TAction
       Caption = 'Pausar'
       ImageIndex = 108
-      OnExecute = PausarExecute
     end
     object Detener: TAction
       Caption = 'Detener'
-      Enabled = False
       ImageIndex = 115
       OnExecute = DetenerExecute
     end
     object FormSave: TFileSaveAs
       Category = 'Form'
       Caption = 'Save &As...'
+      Dialog.Filter = 'Binary DFM-files|*.dfm|Text DFM-files|*.dfm'
       Hint = 'Save As|Saves the active file with a new name'
       ImageIndex = 18
       OnAccept = FormSaveAccept
@@ -558,10 +565,90 @@ object DevelopForm: TDevelopForm
     Left = 704
     Top = 16
   end
-  object JvPascal: TJvInterpreterFm
-    OnGetValue = JvPascalGetValue
-    OnGetUnitSource = JvPascalGetUnitSource
-    Left = 624
+  object pmnMain: TPopupMenu
+    Left = 492
+    Top = 16
+    object mniAlignToGrid: TMenuItem
+      Caption = 'Align to &Grid'
+      OnClick = eveAlign
+    end
+    object mniBringToFront: TMenuItem
+      Caption = 'Bring to &Front'
+    end
+    object mniSendToBack: TMenuItem
+      Caption = 'Send to &Back'
+    end
+    object mniSep1: TMenuItem
+      Caption = '-'
+    end
+    object mniCut: TMenuItem
+      Caption = 'Cu&t'
+      ShortCut = 8238
+      OnClick = eveCut
+    end
+    object mniCopy: TMenuItem
+      Caption = '&Copy'
+      ShortCut = 16429
+      OnClick = eveCopy
+    end
+    object mniPaste: TMenuItem
+      Caption = '&Paste'
+      ShortCut = 8237
+      OnClick = evePaste
+    end
+    object mniDelete: TMenuItem
+      Caption = '&Delete'
+      ShortCut = 46
+      OnClick = eveDelete
+    end
+    object mniSelectAll: TMenuItem
+      Caption = 'Select &All'
+      OnClick = eveSelectAll
+    end
+    object mniSep2: TMenuItem
+      Caption = '-'
+    end
+    object mniLock: TMenuItem
+      Caption = '&Lock'
+      OnClick = eveLock
+    end
+  end
+  object PSImport_Classes1: TPSImport_Classes
+    EnableStreams = True
+    EnableClasses = True
+    Left = 456
+    Top = 56
+  end
+  object PSImport_DateUtils1: TPSImport_DateUtils
+    Left = 504
+    Top = 56
+  end
+  object PSImport_Forms1: TPSImport_Forms
+    EnableForms = True
+    EnableMenus = True
+    Left = 448
+    Top = 32
+  end
+  object PSImport_Controls1: TPSImport_Controls
+    EnableStreams = True
+    EnableGraphics = True
+    EnableControls = True
+    Left = 552
+    Top = 72
+  end
+  object PSImport_StdCtrls1: TPSImport_StdCtrls
+    EnableExtCtrls = True
+    EnableButtons = True
+    Left = 592
+    Top = 72
+  end
+  object PS: TPSScriptDebugger
+    CompilerOptions = []
+    OnLine = PSLine
+    OnCompile = PSCompile
+    Plugins = <>
+    UsePreProcessor = False
+    Left = 384
     Top = 16
   end
 end

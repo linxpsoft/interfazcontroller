@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, CompInsp, InspCtrl, ComCtrls, TypInfo, Design, PropList,
+  StdCtrls, CompInsp, InspCtrl, ComCtrls, TypInfo, PropList,
   JvComponentBase, JvEmbeddedForms;
 
 type
@@ -29,6 +29,8 @@ type
       var EnableAdd: Boolean);
     procedure cmpObjectInspectorFilter(Sender: TObject; Prop: TProperty;
       var Result: Boolean);
+    procedure cmpObjectInspectorValueDoubleClick(Sender: TObject;
+      TheIndex: Integer; var EnableDefault: Boolean);
   private
     { Private declarations }
   public
@@ -42,13 +44,14 @@ implementation
 
 {$R *.DFM}
 
-uses FDMain;
+uses FDMain, Design, EventsFrm, DevelopFrm, RegExpr;
 
 
 procedure TfrmObjectInspector.cmbObjectInspectorFilter(Sender: TObject;
   AComponent: TComponent; var EnableAdd: Boolean);
 begin
-   	EnableAdd := AComponent <> Window.cmpFormDesigner;
+//   	EnableAdd := AComponent <> TDesignWindow.cmpFormDesigner;
+	EnableAdd := AComponent.ClassName <> 'TFormDesigner';
 end;
 
 procedure TfrmObjectInspector.cmpObjectInspectorFilter(Sender: TObject;
@@ -80,6 +83,64 @@ begin
 
 end;
 
+procedure TfrmObjectInspector.cmpObjectInspectorValueDoubleClick(
+  Sender: TObject; TheIndex: Integer; var EnableDefault: Boolean);
+var
+	Hash,Obj,Key: String;
+	E: TEventHandler;
+    i: integer;
+    RegExp : TRegExpr;
+begin
+	Obj := DesignWindow.cmpFormDesigner.Control.Name;
+    Hash := IntToStr(DesignWindow.cmpFormDesigner.Control.GetHashCode);
+  	Key := cmpObjectInspector.Properties[TheIndex].Name;
+  	EventsForm.Editor.Clear;
+    with cmpObjectInspector.Properties[TheIndex] do
+        if (TypeKind=tkMethod) then
+            if (PropType=TypeInfo(TNotifyEvent)) then
+                EventsForm.Editor.Lines.Add('procedure '+Obj+Key+'(Sender: TObject);')
+            else if (PropType=TypeInfo(TMouseEvent)) then
+            begin
+                EventsForm.Editor.Lines.Add('procedure '+Obj+Key+'(Sender: TObject; Button: TMouseButton;');
+                EventsForm.Editor.Lines.Add('		Shift: TShiftState; X, Y: Integer);');
+            end;
+    if EventsList.IndexOf(Hash+Key) >= 0 then
+    begin
+        EventsForm.Editor.Text := EventsForm.Editor.Text+(EventsList.Objects[EventsList.IndexOf(Hash+Key)] as TEventHandler).Source.Text;
+    end else
+    begin
+        with EventsForm do
+        begin
+            Editor.Lines.Add('begin');
+            Editor.Lines.Add('');
+            Editor.Lines.Add('end;');
+            Editor.CaretY :=  Editor.Lines.Count - 1;
+            Editor.CaretX := 5;
+        end;
+    end;
+   	EventsForm.ShowModal;
+    if EventsForm.ModalResult = mrOK then
+    begin
+    	E := TEventHandler.Create;
+        E.Source := TStringList.Create;
+        E.Control := DesignWindow.cmpFormDesigner.Control;
+        E.Event := Key;
+        RegExp := TRegExpr.Create;
+		RegExp.Expression := '^(var|begin)(.)*(end;)$';
+   		RegExp.ModifierM := True;
+   		RegExp.ModifierI := True;
+        RegExp.ModifierS := True;
+   		RegExp.InputString := EventsForm.Editor.Text;
+	    if RegExp.Exec then
+	        E.Source.Text := RegExp.Match[0];
+       // E.Source.Text :=  EventsForm.Editor.Text;
+        if EventsList.IndexOf(Hash+Key) >= 0 then
+    		EventsList.Objects[EventsList.IndexOf(Hash+Key)] := E
+        else EventsList.AddObject(Hash+Key,E);
+
+    end;
+end;
+
 procedure TfrmObjectInspector.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -107,7 +168,7 @@ end;
 
 procedure TfrmObjectInspector.cmbObjectInspectorChange(Sender: TObject);
 begin
-  Window.cmpFormDesigner.Control:=TControl(cmbObjectInspector.Instance);
+  DesignWindow.cmpFormDesigner.Control:=TControl(cmbObjectInspector.Instance);
 end;
 
 procedure TfrmObjectInspector.FormShow(Sender: TObject);

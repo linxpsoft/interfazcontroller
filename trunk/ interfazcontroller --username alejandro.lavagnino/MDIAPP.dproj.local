@@ -28,5 +28,9 @@
     <Transaction>2010/04/16 22:38:17.395.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Unit1.pas=C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Interfaz.pas</Transaction>
     <Transaction>2010/04/16 22:47:58.833.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Interfaz.pas=</Transaction>
     <Transaction>2010/04/16 22:49:33.223.pas,C:\Documents and Settings\PC\Mis documentos\My Dropbox\Interfaz\Controlador\Serial.pas=</Transaction>
+    <Transaction>2010/04/22 10:59:53.234.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\Unit1.pas=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\WindowFrm.pas</Transaction>
+    <Transaction>2010/04/22 10:59:53.250.dfm,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\Unit1.dfm=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\WindowFrm.dfm</Transaction>
+    <Transaction>2010/04/22 15:57:24.156.pas,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\Unit1.pas=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\EventsFrm.pas</Transaction>
+    <Transaction>2010/04/22 15:57:24.156.dfm,C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\Unit1.dfm=C:\Documents and Settings\Ale\My Documents\My Dropbox\Interfaz\Software\EventsFrm.dfm</Transaction>
   </Transactions>
 </BorlandProject>
